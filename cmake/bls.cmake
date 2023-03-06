@@ -1,0 +1,9 @@
+INCLUDE(FetchContent)
+
+FETCHCONTENT_DECLARE(
+        BLS12_381
+        GIT_REPOSITORY https://github.com/herculas/BLS12-381
+        GIT_TAG main
+)
+
+FETCHCONTENT_MAKEAVAILABLE(BLS12_381)
