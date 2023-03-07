@@ -57,6 +57,12 @@ public:
     [[nodiscard]] bls12_381::scalar::Scalar get_t1() const;
     [[nodiscard]] bls12_381::scalar::Scalar get_t2() const;
 
+    void set_x(const bls12_381::scalar::Scalar &scalar);
+    void set_y(const bls12_381::scalar::Scalar &scalar);
+    void set_z(const bls12_381::scalar::Scalar &scalar);
+    void set_t1(const bls12_381::scalar::Scalar &scalar);
+    void set_t2(const bls12_381::scalar::Scalar &scalar);
+
 public:
     Extended operator-() const;
     Extended &operator=(const Extended &rhs);

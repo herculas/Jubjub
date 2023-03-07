@@ -10,6 +10,7 @@
 #include "group/extended.h"
 #include "group/extended_niels.h"
 #include "group/constant.h"
+#include "group/normalize.h"
 
 using bls12_381::scalar::Scalar;
 
@@ -19,6 +20,8 @@ using jubjub::group::Affine;
 using jubjub::group::AffineNiels;
 using jubjub::group::Extended;
 using jubjub::group::ExtendedNiels;
+
+using jubjub::group::batch_normalize;
 
 using jubjub::group::constant::GENERATOR;
 using jubjub::group::constant::GENERATOR_EXTENDED;
@@ -74,7 +77,41 @@ TEST(Group, Assoc) {
     EXPECT_EQ((p * Fr{1000ULL}) * Fr{3938ULL}, p * (Fr{1000ULL} * Fr{3938ULL}));
 }
 
-// TODO: batch normalize
+TEST(Group, BatchNormalize) {
+    Extended p = Extended{Affine{
+            Scalar::from_raw({0x81c571e5d883cfb0, 0x049f7a686f147029, 0xf539c860bc3ea21f, 0x4284715b7ccc8162}),
+            Scalar::from_raw({0xbf096275684bb8ca, 0xc7ba245890af256d, 0x59119f3e86380eb0, 0x3793de182f9fb1d2}),
+    }}.mul_by_cofactor();
+
+    std::vector<Extended> y{};
+    y.reserve(10);
+    for (int i = 0; i < 10; ++i) {
+        y.push_back(p);
+        p = p.doubles();
+    }
+
+    for (const Extended &point: y)
+        EXPECT_TRUE(point.is_on_curve());
+
+    std::vector<Affine> expected{};
+    expected.reserve(y.size());
+    for (const Extended &point: y) expected.emplace_back(point);
+
+    const std::vector<Affine> result1 = batch_normalize(y);
+    for (int i = 0; i < 10; ++i) {
+        EXPECT_EQ(expected[i], result1[i]);
+        EXPECT_TRUE(y[i].is_on_curve());
+        EXPECT_EQ(Affine{y[i]}, expected[i]);
+    }
+
+    const std::vector<Affine> result2 = batch_normalize(y);
+    for (int i = 0; i < 10; ++i) {
+        EXPECT_EQ(expected[i], result2[i]);
+        EXPECT_TRUE(y[i].is_on_curve());
+        EXPECT_EQ(Affine{y[i]}, expected[i]);
+    }
+}
+
 
 Affine FULL_GENERATOR = Affine{
         Scalar{{0x50c87a58c166eca5, 0x8046fd74c0051afc, 0x406355ee695b0493, 0x0d5a8d931bdc7e0a}},

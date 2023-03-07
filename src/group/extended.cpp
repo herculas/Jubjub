@@ -178,4 +178,24 @@ Extended &Extended::operator*=(const field::Fr &rhs) {
     return *this;
 }
 
+void Extended::set_x(const Scalar &scalar) {
+    this->x = scalar;
+}
+
+void Extended::set_y(const Scalar &scalar) {
+    this->y = scalar;
+}
+
+void Extended::set_z(const Scalar &scalar) {
+    this->z = scalar;
+}
+
+void Extended::set_t1(const Scalar &scalar) {
+    this->t1 = scalar;
+}
+
+void Extended::set_t2(const Scalar &scalar) {
+    this->t2 = scalar;
+}
+
 } // namespace jubjub::group
