@@ -309,10 +309,6 @@ TEST(Group, SerializationConsistency) {
     }
 }
 
-//Affine dhke(const Fr &secret, const Extended &pub) {
-//    return Affine{pub * secret};
-//}
-
 TEST(Group, Zip216) {
     const std::vector<std::array<uint8_t, 32>> NON_CANONICAL_ENCODINGS = {
             {

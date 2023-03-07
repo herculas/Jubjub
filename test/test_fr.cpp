@@ -1,14 +1,25 @@
 #include <gtest/gtest.h>
 
-#include "field/constant.h"
+#include "impl/os_rng.h"
 
+#include "field/constant.h"
+#include "group/affine.h"
+#include "group/extended.h"
+#include "group/constant.h"
+
+using rng::impl::OsRng;
+
+using jubjub::field::Fr;
 using jubjub::field::constant::MODULUS;
 using jubjub::field::constant::INV;
 using jubjub::field::constant::R1;
 using jubjub::field::constant::R2;
 using jubjub::field::constant::R3;
 
-using jubjub::field::Fr;
+using jubjub::group::Affine;
+using jubjub::group::Extended;
+
+using jubjub::group::constant::GENERATOR;
 
 TEST(Fr, Inv) {
     uint64_t inv = 1;
@@ -364,4 +375,127 @@ TEST(Fr, NAF) {
     std::copy(computed.begin(), computed.begin() + 31, buf.begin());
 
     EXPECT_EQ(naf3_fr, buf);
+}
+
+TEST(Fr, FromBytes2) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        EXPECT_EQ(a, Fr::from_bytes(a.to_bytes()).value());
+    }
+}
+
+TEST(Fr, AddAssociativity) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        Fr b = Fr::random(rng);
+        Fr c = Fr::random(rng);
+        EXPECT_EQ((a + b) + c, a + (b + c));
+    }
+}
+
+TEST(Fr, AddInv) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        Fr a_neg = -a;
+        EXPECT_EQ(Fr::zero(), a + a_neg);
+        EXPECT_EQ(Fr::zero(), a_neg + a);
+    }
+}
+
+TEST(Fr, AddCommutativity) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        Fr b = Fr::random(rng);
+        EXPECT_EQ(a + b, b + a);
+    }
+}
+
+TEST(Fr, AddIdentity) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        EXPECT_EQ(a, a + Fr::zero());
+        EXPECT_EQ(a, Fr::zero() + a);
+    }
+}
+
+TEST(Fr, SubIdentity) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        EXPECT_EQ(a, a - Fr::zero());
+        EXPECT_EQ(a, Fr::zero() - (-a));
+    }
+}
+
+TEST(Fr, MulAssociativity) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        Fr b = Fr::random(rng);
+        Fr c = Fr::random(rng);
+        EXPECT_EQ((a * b) * c, a * (b * c));
+    }
+}
+
+TEST(Fr, MulIdentity) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        EXPECT_EQ(a, a * Fr::one());
+        EXPECT_EQ(a, Fr::one() * a);
+    }
+}
+
+TEST(Fr, MulInv) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        if (a == Fr::zero()) continue;
+
+        Fr a_inv = a.invert().value();
+        EXPECT_EQ(Fr::one(), a * a_inv);
+        EXPECT_EQ(Fr::one(), a_inv * a);
+    }
+}
+
+TEST(Fr, MulCommutativity) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        Fr b = Fr::random(rng);
+        EXPECT_EQ(a * b, b * a);
+    }
+}
+
+TEST(Fr, MulAddIdentity) {
+    OsRng rng{};
+    for (int i = 0; i < 1000; ++i) {
+        Fr a = Fr::random(rng);
+        EXPECT_EQ(Fr::zero(), Fr::zero() * a);
+        EXPECT_EQ(Fr::zero(), a * Fr::zero());
+    }
+}
+
+Affine dhke(const Fr &secret, const Extended &pub) {
+    return Affine{pub * secret};
+}
+
+TEST(Fr, DHKE) {
+    OsRng rng{};
+    const Extended g = Extended{GENERATOR};
+    for (int i = 0; i < 1000; ++i) {
+        const Fr a = Fr::random(rng);
+        const Fr b = Fr::random(rng);
+
+        const auto a_g = g * a;
+        const auto b_g = g * b;
+
+        EXPECT_EQ(dhke(a, b_g), dhke(b, a_g));
+        EXPECT_NE(dhke(a, b_g), dhke(b, b_g));
+    }
 }
