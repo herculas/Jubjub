@@ -5,7 +5,7 @@
 #include "field/constant.h"
 #include "group/affine.h"
 #include "group/extended.h"
-#include "group/constant.h"
+#include "group/constants.h"
 
 using rng::impl::OsRng;
 

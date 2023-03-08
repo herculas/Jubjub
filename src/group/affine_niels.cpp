@@ -4,7 +4,7 @@
 
 #include "group/affine.h"
 #include "group/extended.h"
-#include "group/constant.h"
+#include "group/constants.h"
 
 namespace jubjub::group {
 

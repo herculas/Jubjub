@@ -113,14 +113,14 @@ const Extended GENERATOR_NUMS_EXTENDED{
         },
 };
 
-const bls12_381::scalar::Scalar EDWARDS_D1 = bls12_381::scalar::Scalar{
+const bls12_381::scalar::Scalar EDWARDS_D1{
         {
                 0x2a522455b974f6b0, 0xfc6cc9ef0d9acab3,
                 0x7a08fb94c27628d1, 0x57f8f6a8fe0e262e,
         }
 };
 
-const bls12_381::scalar::Scalar EDWARDS_D2 = bls12_381::scalar::Scalar{
+const bls12_381::scalar::Scalar EDWARDS_D2{
         {
                 0x54a448ac72e9ed5f, 0xa51befdb1b373967,
                 0xc0d81f217b4a799e, 0x3c0445fed27ecf14,

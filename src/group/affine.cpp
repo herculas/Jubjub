@@ -1,6 +1,6 @@
 #include "group/affine.h"
 
-#include "group/constant.h"
+#include "group/constants.h"
 #include "group/extended.h"
 
 namespace jubjub::group {

@@ -7,7 +7,7 @@
 #include "elgamal/cipher.h"
 #include "field/fr.h"
 #include "group/extended.h"
-#include "group/constant.h"
+#include "group/constants.h"
 
 using rng::impl::OsRng;
 using jubjub::elgamal::Cipher;

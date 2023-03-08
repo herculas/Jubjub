@@ -9,7 +9,7 @@
 #include "group/affine_niels.h"
 #include "group/extended.h"
 #include "group/extended_niels.h"
-#include "group/constant.h"
+#include "group/constants.h"
 #include "group/normalize.h"
 
 using bls12_381::scalar::Scalar;

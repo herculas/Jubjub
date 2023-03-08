@@ -2,7 +2,7 @@
 
 #include "field/fr.h"
 
-#include "group/constant.h"
+#include "group/constants.h"
 #include "group/affine.h"
 #include "group/affine_niels.h"
 #include "group/completed.h"
